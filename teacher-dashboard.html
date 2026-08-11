@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cohort Progress — 90 Days to Agentic AI Engineer</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--text:#101828;--muted:#667085;--line:#e4e7ec;--accent:#4f46e5;--soft:#eef2ff;--good:#067647;--warn:#b54708;--bad:#d92d20;--shadow:0 12px 35px rgba(16,24,40,.08)}
+@media(prefers-color-scheme:dark){:root{--bg:#090e1a;--card:#111827;--text:#f8fafc;--muted:#a6b0c3;--line:#283548;--soft:#1c2540;--shadow:none}}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+.wrap{max-width:1500px;margin:auto;padding:24px 20px 60px}
+h1{font-size:clamp(1.6rem,3vw,2.4rem);margin:.2rem 0;letter-spacing:-.03em}
+.eyebrow{font-weight:850;letter-spacing:.12em;color:var(--accent);font-size:.72rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select{padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+input[type=text],input[type=url],input[type=password]{flex:1 1 260px;min-width:0}
+.btn{padding:10px 14px;border-radius:11px;font-weight:800}.primary{background:var(--accent);color:#fff}.soft{background:var(--soft);color:var(--text)}.outline{background:transparent;border:1px solid var(--line);color:var(--text)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:1.7rem;line-height:1.1}.stat span{font-size:.75rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);cursor:pointer;user-select:none;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);z-index:2}
+th:hover{color:var(--accent)}tbody tr:hover{background:var(--soft)}
+.tablewrap{overflow:auto;max-height:70vh;border-radius:12px}
+.bar{width:110px;height:9px;background:var(--soft);border-radius:999px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.72rem;font-weight:850}
+.t-ok{background:rgba(6,118,71,.13);color:var(--good)}.t-warn{background:rgba(181,71,8,.13);color:var(--warn)}.t-bad{background:rgba(217,45,32,.13);color:var(--bad)}
+.spark{display:flex;gap:1px}.spark i{width:3px;height:14px;background:var(--soft);border-radius:1px}.spark i.on{background:var(--accent)}
+.muted{color:var(--muted)}
+#msg{padding:12px 14px;border-radius:12px;background:var(--soft);margin-top:12px;font-size:.9rem}
+.hidden{display:none}
+details summary{cursor:pointer;font-weight:800}
+@media print{.card.setup,.row.controls,th{position:static}.btn{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span class="eyebrow">INSTRUCTOR VIEW</span>
+<h1>Cohort Progress</h1>
+<p class="muted">90 Days to Agentic AI Engineer — live from your Google Sheet.</p>
+
+<div class="card setup" id="setup">
+  <div class="row">
+    <input type="url" id="url" placeholder="Apps Script web app URL (…/exec)" autocomplete="off" spellcheck="false">
+    <input type="password" id="key" placeholder="TEACHER_KEY" autocomplete="off">
+    <button class="btn primary" id="load">Load</button>
+    <button class="btn outline" id="forget">Forget</button>
+  </div>
+  <div id="msg">Paste the deployment URL and your <code>TEACHER_KEY</code>, then press Load. Both are remembered in this browser only.</div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="stats" id="stats"></div>
+
+  <div class="card">
+    <div class="row controls">
+      <input type="text" id="q" placeholder="Search name or ID…" style="flex:1 1 220px">
+      <select id="cls"><option value="">All classes</option></select>
+      <select id="filter">
+        <option value="">Everyone</option>
+        <option value="stale">Inactive 5+ days</option>
+        <option value="never">Never synced after joining</option>
+        <option value="behind">Behind pace</option>
+        <option value="done">Finished all 90</option>
+      </select>
+      <button class="btn soft" id="refresh">Refresh</button>
+      <button class="btn soft" id="csv">Download CSV</button>
+      <span class="muted" id="stamp"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tablewrap"><table>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="body"></tbody>
+    </table></div>
+    <p class="muted" style="margin-top:12px">Click any column heading to sort. <b>Pace</b> compares days completed against days elapsed since that student first linked, so someone who joined last week isn't judged against someone who joined in January.</p>
+  </div>
+
+  <details class="card">
+    <summary>What this data can and cannot tell you</summary>
+    <p>These numbers are <b>self-reported checkboxes</b>. A student can tick four boxes in ten seconds without doing any work, and nothing here would look different from genuine study. Treat this dashboard as an <i>engagement</i> signal — who has gone quiet, who is stuck on a phase, who needs a nudge — not as evidence of learning.</p>
+    <p>The programme's real evidence is the <code>day-NN-topic</code> folders each student commits to GitHub, with code, tests and a README. Verify against those repositories before grading. A student whose dashboard shows 40 days but whose repository has 6 commits is telling you something useful.</p>
+    <p>Also note that <code>Syncs</code> counts how many times progress was written. A row with 45 days complete but only 2 syncs means the work was marked in one or two sittings rather than daily.</p>
+  </details>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const LS="agentic90-teacher";
+const COLS=[
+ ["StudentID","ID"],["Name","Name"],["Class","Class"],["DaysComplete","Days"],
+ ["Percent","Progress"],["CurrentDay","On day"],["Phases","Phases"],
+ ["Pace","Pace"],["Syncs","Syncs"],["FirstSeen","Joined"],["LastSync","Last active"]
+];
+let rows=[],sortKey="DaysComplete",sortDir=-1;
+
+/* ---------- config persistence ---------- */
+(function(){
+ try{const c=JSON.parse(localStorage.getItem(LS)||"null");
+  if(c){$("url").value=c.url||"";$("key").value=c.key||"";if(c.url&&c.key)setTimeout(load,300)}
+ }catch(e){}
+})();
+$("forget").onclick=()=>{
+ try{localStorage.removeItem(LS)}catch(e){}
+ $("url").value="";$("key").value="";$("app").classList.add("hidden");
+ msg("Saved credentials cleared from this browser.");
+};
+function msg(t,bad){$("msg").innerHTML=t;$("msg").style.color=bad?"var(--bad)":"";}
+
+/* ---------- JSONP fetch (Apps Script + CORS don't get along) ---------- */
+function jsonp(url,params){
+ return new Promise((resolve,reject)=>{
+  const cb="cb_"+Math.random().toString(36).slice(2);
+  const s=document.createElement("script");
+  const timer=setTimeout(()=>{cleanup();reject(new Error("timeout"))},20000);
+  function cleanup(){clearTimeout(timer);delete window[cb];s.remove()}
+  window[cb]=data=>{cleanup();resolve(data)};
+  s.onerror=()=>{cleanup();reject(new Error("network"))};
+  const qs=Object.keys(params).map(k=>encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
+  s.src=url+(url.indexOf("?")>-1?"&":"?")+qs+"&callback="+cb;
+  document.body.appendChild(s);
+ });
+}
+
+/* ---------- load ---------- */
+$("load").onclick=load;
+$("refresh").onclick=load;
+async function load(){
+ const url=$("url").value.trim(),key=$("key").value.trim();
+ if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)){msg("That doesn't look like an Apps Script <code>/exec</code> URL.",1);return}
+ if(!key){msg("Enter your TEACHER_KEY.",1);return}
+ msg("Loading…");
+ try{
+  const data=await jsonp(url,{key:key});
+  if(!data.ok){msg("Rejected: "+(data.error||"unknown")+". Check the TEACHER_KEY, and that the deployment's access is set to <b>Anyone</b>.",1);return}
+  try{localStorage.setItem(LS,JSON.stringify({url:url,key:key}))}catch(e){}
+  rows=data.students||[];
+  $("app").classList.remove("hidden");
+  $("stamp").textContent="Updated "+new Date(data.fetchedAt).toLocaleString();
+  msg(rows.length+" student"+(rows.length===1?"":"s")+" loaded.");
+  buildClassFilter();render();
+ }catch(err){
+  msg("Could not reach the script. Confirm the deployment is live and set to <b>Execute as: Me</b>, <b>Who has access: Anyone</b>. ("+err.message+")",1);
+ }
+}
+
+/* ---------- derived fields ---------- */
+const DAYMS=86400000;
+function enrich(r){
+ const joined=r.FirstSeen?new Date(r.FirstSeen):null;
+ const last=r.LastSync?new Date(r.LastSync):null;
+ const elapsed=joined?Math.max(1,Math.floor((Date.now()-joined.getTime())/DAYMS)+1):null;
+ const idle=last?Math.floor((Date.now()-last.getTime())/DAYMS):999;
+ // pace: completed vs. days available since joining, capped at 90
+ const expected=elapsed?Math.min(90,elapsed):null;
+ const pace=expected?Number(r.DaysComplete||0)/expected:null;
+ return {joined:joined,last:last,elapsed:elapsed,idle:idle,pace:pace};
+}
+function phaseCells(r){
+ let out="";
+ const caps=[10,10,10,10,7,8,10,8,9,8];
+ for(let i=1;i<=10;i++){
+  const done=Number(r["P"+i]||0),cap=caps[i-1];
+  for(let k=0;k<cap;k++)out+='<i class="'+(k<done?"on":"")+'"></i>';
+  if(i<10)out+='<i style="background:transparent;width:2px"></i>';
+ }
+ return '<span class="spark" title="Phases 1–10, one tick per completed day">'+out+'</span>';
+}
+function paceTag(p){
+ if(p===null)return '<span class="muted">—</span>';
+ const pct=Math.round(p*100);
+ const cls=p>=.8?"t-ok":p>=.5?"t-warn":"t-bad";
+ return '<span class="tag '+cls+'">'+pct+'%</span>';
+}
+function idleTag(d,last){
+ if(!last)return '<span class="muted">never</span>';
+ const txt=d===0?"today":d===1?"yesterday":d+" days ago";
+ const cls=d<=2?"t-ok":d<=5?"t-warn":"t-bad";
+ return '<span class="tag '+cls+'">'+txt+'</span>';
+}
+
+/* ---------- filtering + sorting ---------- */
+function visible(){
+ const q=$("q").value.trim().toLowerCase(),cls=$("cls").value,f=$("filter").value;
+ return rows.filter(r=>{
+  const e=enrich(r);
+  if(q&&!(String(r.Name).toLowerCase().includes(q)||String(r.StudentID).toLowerCase().includes(q)))return false;
+  if(cls&&r.Class!==cls)return false;
+  if(f==="stale"&&e.idle<5)return false;
+  if(f==="never"&&Number(r.Syncs||0)>1)return false;
+  if(f==="behind"&&!(e.pace!==null&&e.pace<.5))return false;
+  if(f==="done"&&Number(r.DaysComplete)<90)return false;
+  return true;
+ }).sort((a,b)=>{
+  const ea=enrich(a),eb=enrich(b);
+  let x,y;
+  if(sortKey==="Pace"){x=ea.pace===null?-1:ea.pace;y=eb.pace===null?-1:eb.pace}
+  else if(sortKey==="LastSync"){x=ea.last?ea.last.getTime():0;y=eb.last?eb.last.getTime():0}
+  else if(sortKey==="FirstSeen"){x=ea.joined?ea.joined.getTime():0;y=eb.joined?eb.joined.getTime():0}
+  else if(sortKey==="Phases"){x=Number(a.DaysComplete);y=Number(b.DaysComplete)}
+  else {x=a[sortKey];y=b[sortKey]}
+  if(typeof x==="string"||typeof y==="string"){x=String(x).toLowerCase();y=String(y).toLowerCase();return x<y?-sortDir:x>y?sortDir:0}
+  return (Number(x)-Number(y))*sortDir;
+ });
+}
+function buildClassFilter(){
+ const set=[...new Set(rows.map(r=>r.Class).filter(Boolean))].sort();
+ $("cls").innerHTML='<option value="">All classes</option>'+set.map(c=>'<option>'+c+'</option>').join("");
+}
+
+/* ---------- render ---------- */
+function render(){
+ $("head").innerHTML=COLS.map(c=>'<th data-k="'+c[0]+'">'+c[1]+(sortKey===c[0]?(sortDir>0?" ▲":" ▼"):"")+'</th>').join("");
+ $("head").querySelectorAll("th").forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;
+  if(sortKey===k)sortDir=-sortDir;else{sortKey=k;sortDir=(k==="Name"||k==="StudentID"||k==="Class")?1:-1}
+  render();
+ });
+
+ const list=visible();
+ $("body").innerHTML=list.map(r=>{
+  const e=enrich(r),pct=Number(r.Percent||0);
+  return "<tr>"
+   +"<td><b>"+esc(r.StudentID)+"</b></td>"
+   +"<td>"+esc(r.Name)+"</td>"
+   +"<td>"+esc(r.Class||"—")+"</td>"
+   +"<td>"+r.DaysComplete+"</td>"
+   +'<td><span class="bar"><i style="width:'+pct+'%"></i></span>'+pct+"%</td>"
+   +"<td>"+r.CurrentDay+"</td>"
+   +"<td>"+phaseCells(r)+"</td>"
+   +"<td>"+paceTag(e.pace)+"</td>"
+   +"<td>"+(r.Syncs||0)+"</td>"
+   +'<td class="muted">'+(e.joined?e.joined.toLocaleDateString():"—")+"</td>"
+   +"<td>"+idleTag(e.idle,e.last)+"</td>"
+   +"</tr>";
+ }).join("")||'<tr><td colspan="11" class="muted" style="padding:24px">No students match these filters.</td></tr>';
+
+ const all=rows.length;
+ const done=rows.filter(r=>Number(r.DaysComplete)>=90).length;
+ const stale=rows.filter(r=>enrich(r).idle>=5).length;
+ const behind=rows.filter(r=>{const p=enrich(r).pace;return p!==null&&p<.5}).length;
+ const avg=all?rows.reduce((a,r)=>a+Number(r.DaysComplete||0),0)/all:0;
+ const median=(()=>{const v=rows.map(r=>Number(r.DaysComplete||0)).sort((a,b)=>a-b);
+  return v.length?(v.length%2?v[(v.length-1)/2]:(v[v.length/2-1]+v[v.length/2])/2):0})();
+ $("stats").innerHTML=[
+  ["<b>"+all+"</b><span>Students linked</span>"],
+  ["<b>"+avg.toFixed(1)+"</b><span>Average days done</span>"],
+  ["<b>"+median+"</b><span>Median days done</span>"],
+  ["<b>"+behind+"</b><span>Behind pace</span>"],
+  ["<b>"+stale+"</b><span>Quiet 5+ days</span>"],
+  ["<b>"+done+"</b><span>Finished all 90</span>"],
+  ["<b>"+list.length+"</b><span>Shown by filters</span>"]
+ ].map(x=>'<div class="stat">'+x+"</div>").join("");
+}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+["q","cls","filter"].forEach(id=>$(id).oninput=$(id).onchange=render);
+
+/* ---------- CSV ---------- */
+$("csv").onclick=()=>{
+ const head=["StudentID","Name","Class","DaysComplete","Percent","CurrentDay",
+  "P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","PacePct","Syncs","FirstSeen","LastSync","DaysIdle"];
+ const q=s=>'"'+String(s==null?"":s).replace(/"/g,'""')+'"';
+ const body=visible().map(r=>{
+  const e=enrich(r);
+  return head.map(h=>{
+   if(h==="PacePct")return e.pace===null?"":Math.round(e.pace*100);
+   if(h==="DaysIdle")return e.last?e.idle:"";
+   return r[h];
+  }).map(q).join(",");
+ });
+ const blob=new Blob([[head.map(q).join(",")].concat(body).join("\r\n")],{type:"text/csv;charset=utf-8"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download="cohort-progress-"+new Date().toISOString().slice(0,10)+".csv";
+ a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+</script>
+</body>
+</html>

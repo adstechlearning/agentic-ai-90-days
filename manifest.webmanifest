@@ -1,0 +1,42 @@
+{
+  "id": "./",
+  "name": "90 Days to Agentic AI Engineer",
+  "short_name": "90 Days AI",
+  "description": "A free, self-paced 90-day study plan from Python fundamentals to deployed, evaluated agentic AI systems. 3 hours a day, 10 phases, 12 portfolio projects, 136 official documentation links.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "background_color": "#f3f6fb",
+  "theme_color": "#4f46e5",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "90-Day Roadmap",
+      "short_name": "Roadmap",
+      "url": "./#roadmap",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Resource Library",
+      "short_name": "Resources",
+      "url": "./#resources",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "url": "./#projects",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
