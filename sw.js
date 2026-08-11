@@ -7,7 +7,7 @@
  * subfolder (username.github.io/repo/) as well as from a domain root.
  */
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = "agentic90-" + CACHE_VERSION;
 
 // Everything needed to run the app with no network at all.
